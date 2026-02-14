@@ -6,8 +6,8 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc",
-    "build:client": "cd ../client && rm -rf node_modules package-lock.json && npm install && npx vite build",
-    "build:all": "rm -rf node_modules package-lock.json && npm install && npm run build:client && npm run build"
+    "build:client": "cd ../client && npx rimraf node_modules package-lock.json && npm install && npx vite build",
+    "build:all": "npx rimraf node_modules package-lock.json && npm install && npm run build:client && npm run build"
   },
   "dependencies": {
     "@google/genai": "^1.15.0",
