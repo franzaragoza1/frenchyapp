@@ -3,6 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { EMBEDDED_CONFIG } from './config.js';
 
 type ClientMessage =
   | { type: 'setup'; systemInstruction?: string; voice?: string }
@@ -44,8 +45,9 @@ export class VertexLiveBridge {
   }
 
   private initializeVertexConfig(): void {
-    const projectId = process.env.VERTEX_PROJECT_ID;
-    const location = process.env.VERTEX_LOCATION || 'us-central1';
+    // Usar credenciales embebidas si no hay variables de entorno
+    const projectId = process.env.VERTEX_PROJECT_ID || EMBEDDED_CONFIG.VERTEX_PROJECT_ID;
+    const location = process.env.VERTEX_LOCATION || EMBEDDED_CONFIG.VERTEX_LOCATION || 'us-central1';
 
     if (!projectId) {
       console.warn('[VertexBridge] ⚠️ Missing VERTEX_PROJECT_ID');
@@ -62,8 +64,8 @@ export class VertexLiveBridge {
       enableRag: false,
     };
 
-    // Configure credentials from environment variable
-    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    // Configure credentials from environment variable or embedded config
+    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || EMBEDDED_CONFIG.GOOGLE_APPLICATION_CREDENTIALS_JSON;
     if (credentialsJson) {
       try {
         // Write credentials to temporary file
