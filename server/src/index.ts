@@ -30,7 +30,8 @@ new VertexLiveBridge(geminiWss);
 
 // En producción, servir el cliente compilado
 if (isProduction) {
-  const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+  // __dirname apunta a server/dist/, subimos 2 niveles para llegar a la raíz del proyecto
+  const clientDistPath = path.join(__dirname, '..', '..', 'client', 'dist');
   
   if (fs.existsSync(clientDistPath)) {
     // Servir archivos estáticos manualmente
