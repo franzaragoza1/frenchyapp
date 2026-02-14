@@ -209,16 +209,21 @@ Réponds toujours en français. Sois concis et encourageant.`;
 
       switch (message.type) {
         case 'setup': {
-          if (session) return;
+          if (session) { console.log('[VertexBridge] ⚠️ Setup already done, ignoring'); return; }
           const setupTimeout = this.setupTimeouts.get(clientWs);
           if (setupTimeout) {
             clearTimeout(setupTimeout);
             this.setupTimeouts.delete(clientWs);
           }
+          console.log('[VertexBridge] 📋 Setup message received, connecting to Vertex...');
           this.connectToVertex(clientWs, message)
-            .then(() => console.log('[VertexBridge] ✅ Vertex session established'))
+            .then(() => {
+              console.log('[VertexBridge] ✅ Vertex session established and stored');
+              console.log('[VertexBridge] Session count:', this.clientSessions.size);
+            })
             .catch((err) => {
               console.error('[VertexBridge] ❌ Failed to connect to Vertex:', err);
+              console.error('[VertexBridge] Error stack:', err?.stack);
               clientWs.send(JSON.stringify({ type: 'error', error: err?.message || String(err) }));
               clientWs.close();
             });
@@ -230,6 +235,8 @@ Réponds toujours en français. Sois concis et encourageant.`;
             session.sendRealtimeInput({
               media: { mimeType: message.mimeType, data: message.data },
             });
+          } else {
+            console.warn('[VertexBridge] ⚠️ Received audio_chunk but no session');
           }
           break;
 
