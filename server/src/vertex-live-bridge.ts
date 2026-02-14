@@ -1,5 +1,8 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 import { WebSocketServer, WebSocket } from 'ws';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 type ClientMessage =
   | { type: 'setup'; systemInstruction?: string; voice?: string }
@@ -59,6 +62,23 @@ export class VertexLiveBridge {
       enableRag: false,
     };
 
+    // Configure credentials from environment variable
+    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    if (credentialsJson) {
+      try {
+        // Write credentials to temporary file
+        const tempDir = os.tmpdir();
+        const credPath = path.join(tempDir, 'gcloud-credentials.json');
+        fs.writeFileSync(credPath, credentialsJson);
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = credPath;
+        console.log('[VertexBridge] ✅ Credentials written to temporary file');
+      } catch (error) {
+        console.error('[VertexBridge] ❌ Failed to write credentials:', error);
+        return;
+      }
+    }
+
+    // Initialize Vertex AI (will use GOOGLE_APPLICATION_CREDENTIALS if set)
     this.vertexAi = new GoogleGenAI({
       vertexai: true,
       project: projectId,
