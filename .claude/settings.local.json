@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(git reset:*)",
+      "Bash(git clean:*)"
     ]
   }
 }
